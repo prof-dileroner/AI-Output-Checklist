@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluating LLM-Generated Content — Preservice Teacher Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --color-text-primary: #1a1a1a;
+    --color-text-secondary: #555;
+    --color-text-tertiary: #888;
+    --color-background-primary: #fff;
+    --color-background-secondary: #f5f4f0;
+    --color-border-tertiary: rgba(0,0,0,0.12);
+    --color-border-secondary: rgba(0,0,0,0.22);
+    --color-background-info: #E6F1FB;
+    --color-border-info: #378ADD;
+    --color-text-info: #185FA5;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --font-sans: 'DM Sans', system-ui, sans-serif;
+    --font-serif: 'DM Serif Display', Georgia, serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-text-primary: #f0ede8;
+      --color-text-secondary: #aaa;
+      --color-text-tertiary: #666;
+      --color-background-primary: #1c1b18;
+      --color-background-secondary: #252420;
+      --color-border-tertiary: rgba(255,255,255,0.1);
+      --color-border-secondary: rgba(255,255,255,0.2);
+      --color-background-info: #0c447c;
+      --color-border-info: #378ADD;
+      --color-text-info: #B5D4F4;
+    }
+  }
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+  .container { max-width: 680px; margin: 0 auto; }
+  .checklist-root { padding: 0.5rem 0 2rem; }
+  .top-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-text-tertiary); margin-bottom: 0.5rem; font-weight: 500; }
+  .page-title { font-family: var(--font-serif); font-size: 26px; font-weight: 400; color: var(--color-text-primary); margin: 0 0 0.25rem; }
+  .page-sub { font-size: 14px; color: var(--color-text-secondary); margin: 0 0 2rem; }
+  .section { margin-bottom: 1.5rem; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; background: var(--color-background-primary); }
+  .section-header { display: flex; align-items: center; gap: 12px; padding: 1rem 1.25rem; cursor: pointer; user-select: none; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .section-header:hover { background: var(--color-background-secondary); }
+  .section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 15px; }
+  .section-meta { flex: 1; }
+  .section-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 2px; }
+  .section-desc { font-size: 12px; color: var(--color-text-secondary); margin: 0; }
+  .section-badge { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
+  .chevron { font-size: 14px; color: var(--color-text-tertiary); transition: transform 0.2s; display: inline-block; }
+  .chevron.open { transform: rotate(90deg); }
+  .items-container { padding: 0.75rem 1.25rem; display: none; }
+  .items-container.open { display: block; }
+  .item { display: flex; gap: 12px; padding: 0.65rem 0; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: flex-start; }
+  .item:last-child { border-bottom: none; }
+  .item-check { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--color-border-secondary); flex-shrink: 0; cursor: pointer; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: background 0.15s, border-color 0.15s; }
+  .item-check.checked { background: var(--color-background-info); border-color: var(--color-border-info); }
+  .item-check.checked::after { content: '✓'; font-size: 11px; color: var(--color-text-info); font-weight: 500; }
+  .item-label { font-size: 13px; color: var(--color-text-primary); line-height: 1.5; flex: 1; cursor: pointer; }
+  .item-sublabel { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; display: block; }
+  .progress-bar-wrap { height: 3px; background: var(--color-background-secondary); border-radius: 2px; margin: 0.75rem 0 0; overflow: hidden; }
+  .progress-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s; background: #378ADD; }
+  .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.25rem; background: var(--color-background-secondary); border-top: 0.5px solid var(--color-border-tertiary); }
+  .summary-label { font-size: 12px; color: var(--color-text-secondary); }
+  .summary-count { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+  .global-bar { margin: 0 0 2rem; }
+  .global-bar-label { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .global-bar-label span { font-size: 12px; color: var(--color-text-secondary); }
+  .global-bar-label strong { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+  .global-bar-track { height: 6px; background: var(--color-background-secondary); border-radius: 3px; overflow: hidden; border: 0.5px solid var(--color-border-tertiary); }
+  .global-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; background: #1D9E75; }
+  .reset-btn { font-size: 12px; color: var(--color-text-secondary); background: none; border: none; cursor: pointer; padding: 0; text-decoration: underline; }
+  .reset-btn:hover { color: var(--color-text-primary); }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="checklist-root">
+  <p class="top-label">Preservice teacher toolkit</p>
+  <h1 class="page-title">Evaluating LLM-Generated Content</h1>
+  <p class="page-sub">Work through each section before using AI output in your classroom.</p>
+
+  <div class="global-bar">
+    <div class="global-bar-label">
+      <span>Overall completion</span>
+      <strong id="global-pct">0 of 9 complete</strong>
+    </div>
+    <div class="global-bar-track"><div class="global-bar-fill" id="global-fill" style="width:0%"></div></div>
+  </div>
+
+  <div id="sections"></div>
+
+  <button class="reset-btn" onclick="resetAll()">Reset all checks</button>
+</div>
+</div>
+
+<script>
+const SECTIONS = [
+  {
+    id: 'accuracy',
+    icon: '◎',
+    iconBg: '#E6F1FB',
+    iconColor: '#185FA5',
+    title: 'Evaluate & determine accuracy',
+    desc: 'Verify that the AI output is factually sound and pedagogically appropriate',
+    badgeBg: '#E6F1FB',
+    badgeColor: '#185FA5',
+    items: [
+      { label: 'Academic accuracy', sub: 'Verify all dates, formulas, statistics, and named concepts against a trusted source. Flag anything you cannot personally confirm.' },
+      { label: 'Curriculum alignment', sub: 'Cross-reference the content against your national or state curriculum documents. Note which learning objectives are met and which are missing or misaligned.' },
+      { label: 'Age appropriateness', sub: 'Read the output aloud as if you were a student at the target grade level. Is the vocabulary, sentence length, and conceptual load a genuine match for their cognitive stage?' }
+    ]
+  },
+  {
+    id: 'bias',
+    icon: '◑',
+    iconBg: '#FAEEDA',
+    iconColor: '#854F0B',
+    title: 'Identify bias & misinformation',
+    desc: 'Scrutinise the content for hidden assumptions and invented facts',
+    badgeBg: '#FAEEDA',
+    badgeColor: '#854F0B',
+    items: [
+      { label: 'Algorithmic bias check', sub: 'Scan for stereotyped representations of gender, religion, race, ethnicity, or socio-economic status — including omission. Ask: whose perspective is centred? Who is invisible?' },
+      { label: 'Hallucination check', sub: 'Search for every quoted statistic, named person, cited event, or referenced study independently. LLMs can fabricate plausible-sounding sources — verify before you trust.' },
+      { label: 'Loaded language audit', sub: 'Identify words or framings that carry ideological weight students might absorb uncritically (e.g. "primitive," "civilised," "natural"). Rewrite or contextualise them explicitly.' }
+    ]
+  },
+  {
+    id: 'transform',
+    icon: '◈',
+    iconBg: '#E1F5EE',
+    iconColor: '#0F6E56',
+    title: 'Transform for your context',
+    desc: 'Make the output genuinely yours and genuinely theirs',
+    badgeBg: '#E1F5EE',
+    badgeColor: '#0F6E56',
+    items: [
+      { label: 'Human voice & personalisation', sub: 'Identify at least one place to insert a personal anecdote, a relevant class reference, or a "I remember when…" moment. Generic AI prose teaches students to disengage — your voice re-engages them.' },
+      { label: 'Contextual localisation', sub: 'Replace generic place names, currency, cultural references, and examples with ones drawn from your students\' own geography, community events, or shared cultural knowledge.' },
+      { label: 'Pedagogical scaffolding', sub: 'Add discussion prompts, extension tasks, or differentiation notes the LLM omitted. AI output is rarely ready for diverse learners without intentional scaffolding layered in by you.' },
+      { label: 'Transparency with students', sub: 'Decide how you will disclose AI involvement to students. Modelling critical evaluation of AI output is itself a powerful 21st-century literacy lesson.' }
+    ]
+  }
+];
+
+const state = {};
+SECTIONS.forEach(s => { s.items.forEach((_, i) => { state[s.id + '_' + i] = false; }); });
+
+function totalItems() { return Object.keys(state).length; }
+function checkedCount() { return Object.values(state).filter(Boolean).length; }
+function sectionChecked(sid) { return SECTIONS.find(s=>s.id===sid).items.filter((_,i)=>state[sid+'_'+i]).length; }
+
+function updateGlobal() {
+  const tot = totalItems(), chk = checkedCount();
+  document.getElementById('global-pct').textContent = chk + ' of ' + tot + ' complete';
+  document.getElementById('global-fill').style.width = Math.round(chk/tot*100) + '%';
+}
+
+function updateSection(sid) {
+  const sec = SECTIONS.find(s=>s.id===sid);
+  const chk = sectionChecked(sid), tot = sec.items.length;
+  const fill = document.getElementById('fill-'+sid);
+  const cnt = document.getElementById('cnt-'+sid);
+  const badge = document.getElementById('badge-'+sid);
+  if(fill) fill.style.width = Math.round(chk/tot*100)+'%';
+  if(cnt) cnt.textContent = chk + ' / ' + tot;
+  if(badge) badge.textContent = chk === tot ? 'Done' : chk + ' / ' + tot;
+  updateGlobal();
+}
+
+function toggleItem(sid, idx) {
+  const key = sid + '_' + idx;
+  state[key] = !state[key];
+  const chk = document.getElementById('chk-'+sid+'-'+idx);
+  if(state[key]) chk.classList.add('checked'); else chk.classList.remove('checked');
+  updateSection(sid);
+}
+
+function toggleSection(sid) {
+  const container = document.getElementById('items-'+sid);
+  const chevron = document.getElementById('chev-'+sid);
+  const isOpen = container.classList.contains('open');
+  document.querySelectorAll('.items-container').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.chevron').forEach(el => el.classList.remove('open'));
+  if(!isOpen) { container.classList.add('open'); chevron.classList.add('open'); }
+}
+
+function resetAll() {
+  Object.keys(state).forEach(k => { state[k] = false; });
+  document.querySelectorAll('.item-check').forEach(el => el.classList.remove('checked'));
+  SECTIONS.forEach(s => updateSection(s.id));
+}
+
+function render() {
+  const root = document.getElementById('sections');
+  root.innerHTML = '';
+  SECTIONS.forEach((sec, si) => {
+    const div = document.createElement('div');
+    div.className = 'section';
+    div.innerHTML = `
+      <div class="section-header" onclick="toggleSection('${sec.id}')">
+        <div class="section-icon" style="background:${sec.iconBg};color:${sec.iconColor};font-size:18px;">${sec.icon}</div>
+        <div class="section-meta">
+          <p class="section-title">${sec.title}</p>
+          <p class="section-desc">${sec.desc}</p>
+        </div>
+        <span class="section-badge" id="badge-${sec.id}" style="background:${sec.badgeBg};color:${sec.badgeColor};">0 / ${sec.items.length}</span>
+        <span class="chevron ${si===0?'open':''}" id="chev-${sec.id}">›</span>
+      </div>
+      <div class="items-container ${si===0?'open':''}" id="items-${sec.id}">
+        ${sec.items.map((item, idx) => `
+          <div class="item" onclick="toggleItem('${sec.id}', ${idx})">
+            <div class="item-check" id="chk-${sec.id}-${idx}"></div>
+            <div class="item-label">
+              ${item.label}
+              <span class="item-sublabel">${item.sub}</span>
+            </div>
+          </div>
+        `).join('')}
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="fill-${sec.id}" style="width:0%"></div></div>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">${sec.items.length} criteria</span>
+        <span class="summary-count" id="cnt-${sec.id}">0 / ${sec.items.length}</span>
+      </div>
+    `;
+    root.appendChild(div);
+  });
+  updateGlobal();
+}
+
+render();
+</script>
+</body>
+</html>
